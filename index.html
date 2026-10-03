@@ -61,6 +61,7 @@ a{color:var(--d4)}
 .cards b{font:700 1.25rem var(--display)}
 .cards .mono{color:var(--muted)}
 table{border-collapse:collapse;font-variant-numeric:tabular-nums}
+table.counts{width:100%}
 th,td{text-align:right;padding:6px 14px;border-bottom:1px solid var(--line)}
 th{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .tablewrap{overflow-x:auto}
@@ -81,9 +82,9 @@ th{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mut
     <a href="repeat_stacking.html"><b>Repeated sizes: stacking</b><span>Repeated sizes with flat heads for stacking. Equal sizes never nest or stack.</span><span class="mono">2, 22, 415, 12160, 493998, …</span><span>New sequence</span></a>
   </section>
 
-  <section class="col">
-    <h2>The two counts</h2>
-    <div class="tablewrap"><table>
+  <section>
+    <h2>The four counts</h2>
+    <div class="tablewrap"><table class="counts">
       <thead><tr><th>Dolls</th><th>Nesting</th><th>Stacking</th><th>Repeated sizes: nesting</th><th>Repeated sizes: stacking</th></tr></thead>
       <tbody><tr><td>1</td><td>2</td><td>2</td><td>2</td><td>2</td></tr><tr><td>2</td><td>10</td><td>19</td><td>13</td><td>22</td></tr><tr><td>3</td><td>75</td><td>312</td><td>117</td><td>415</td></tr><tr><td>4</td><td>780</td><td>7,643</td><td>1,485</td><td>12,160</td></tr><tr><td>5</td><td>10,556</td><td>256,020</td><td>24,508</td><td>493,998</td></tr><tr><td>6</td><td>178,031</td><td>11,096,168</td><td>505,381</td><td>26,174,898</td></tr><tr><td>7</td><td>3,630,780</td><td>598,896,401</td><td>12,612,491</td><td>1,735,381,834</td></tr><tr><td>8</td><td>87,548,580</td><td>39,139,847,188</td><td>372,322,941</td><td>139,755,623,586</td></tr><tr><td>9</td><td>2,452,523,325</td><td>3,031,322,144,533</td><td>12,770,803,390</td><td>13,367,574,533,502</td></tr><tr><td>10</td><td>78,697,155,750</td><td>273,521,581,657,006</td><td>501,779,797,457</td><td>1,492,053,442,567,399</td></tr></tbody>
     </table></div>
