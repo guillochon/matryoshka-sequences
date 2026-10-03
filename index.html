@@ -54,7 +54,8 @@ a{color:var(--d4)}
 .crumbs a:hover,.crumbs a:focus-visible{text-decoration:underline}
 .crumbs [aria-current]{color:var(--fg);font-weight:600}
 
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:640px){.cards{grid-template-columns:1fr}}
 .cards a{display:flex;flex-direction:column;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 18px;color:var(--fg);text-decoration:none}
 .cards a:hover,.cards a:focus-visible{border-color:var(--d4)}
 .cards b{font:700 1.25rem var(--display)}
@@ -67,22 +68,24 @@ th{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mut
 </head>
 <body>
 <div class="wrap">
-  <nav class="crumbs" aria-label="Pages"><a href="./" aria-current=page>Home</a><a href="nesting.html">Nesting gallery</a><a href="stacking.html">Stacking gallery</a></nav>
+  <nav class="crumbs" aria-label="Pages"><a href="./" aria-current=page>Home</a><a href="nesting.html">Nesting</a><a href="stacking.html">Stacking</a><a href="repeat_nesting.html">Repeated sizes: nesting</a><a href="repeat_stacking.html">Repeated sizes: stacking</a></nav>
   <header class="col">
     <h1>Matryoshka Sequences</h1>
-    <p class="lede">How many ways can you arrange N Russian nesting dolls when each one comes apart into a top and a bottom half? Two versions of the puzzle, with every arrangement drawn for up to four dolls.</p>
+    <p class="lede">How many ways can you arrange N Russian nesting dolls when each one comes apart into a top and a bottom half? Four versions of the puzzle (with or without stacking, with distinct or repeated sizes), with every arrangement drawn for up to four dolls.</p>
   </header>
 
   <section class="cards">
     <a href="nesting.html"><b>Nesting</b><span>Pieces go inside larger pieces: bottoms in bottoms, tops in tops, dolls in dolls.</span><span class="mono">2, 10, 75, 780, 10556, …</span><span>Bell(N)·Bell(N+1), OEIS A124426</span></a>
     <a href="stacking.html"><b>Stacking</b><span>The dolls also have flat heads, so a smaller piece can stand on a top half or a closed doll.</span><span class="mono">2, 19, 312, 7643, 256020, …</span><span>New sequence, submitted to the OEIS</span></a>
+    <a href="repeat_nesting.html"><b>Repeated sizes: nesting</b><span>Several dolls can share a size. Equal dolls are identical and never nest in each other; only the order of sizes matters.</span><span class="mono">2, 13, 117, 1485, 24508, …</span><span>New sequence</span></a>
+    <a href="repeat_stacking.html"><b>Repeated sizes: stacking</b><span>Repeated sizes with flat heads for stacking. Equal sizes never nest or stack.</span><span class="mono">2, 22, 415, 12160, 493998, …</span><span>New sequence</span></a>
   </section>
 
   <section class="col">
     <h2>The two counts</h2>
     <div class="tablewrap"><table>
-      <thead><tr><th>Dolls</th><th>Nesting</th><th>Stacking</th></tr></thead>
-      <tbody><tr><td>1</td><td>2</td><td>2</td></tr><tr><td>2</td><td>10</td><td>19</td></tr><tr><td>3</td><td>75</td><td>312</td></tr><tr><td>4</td><td>780</td><td>7,643</td></tr><tr><td>5</td><td>10,556</td><td>256,020</td></tr><tr><td>6</td><td>178,031</td><td>11,096,168</td></tr><tr><td>7</td><td>3,630,780</td><td>598,896,401</td></tr><tr><td>8</td><td>87,548,580</td><td>39,139,847,188</td></tr></tbody>
+      <thead><tr><th>Dolls</th><th>Nesting</th><th>Stacking</th><th>Repeated sizes: nesting</th><th>Repeated sizes: stacking</th></tr></thead>
+      <tbody><tr><td>1</td><td>2</td><td>2</td><td>2</td><td>2</td></tr><tr><td>2</td><td>10</td><td>19</td><td>13</td><td>22</td></tr><tr><td>3</td><td>75</td><td>312</td><td>117</td><td>415</td></tr><tr><td>4</td><td>780</td><td>7,643</td><td>1,485</td><td>12,160</td></tr><tr><td>5</td><td>10,556</td><td>256,020</td><td>24,508</td><td>493,998</td></tr><tr><td>6</td><td>178,031</td><td>11,096,168</td><td>505,381</td><td>26,174,898</td></tr><tr><td>7</td><td>3,630,780</td><td>598,896,401</td><td>12,612,491</td><td>1,735,381,834</td></tr><tr><td>8</td><td>87,548,580</td><td>39,139,847,188</td><td>372,322,941</td><td>139,755,623,586</td></tr><tr><td>9</td><td>2,452,523,325</td><td>3,031,322,144,533</td><td>12,770,803,390</td><td>13,367,574,533,502</td></tr><tr><td>10</td><td>78,697,155,750</td><td>273,521,581,657,006</td><td>501,779,797,457</td><td>1,492,053,442,567,399</td></tr></tbody>
     </table></div>
   </section>
 
@@ -93,8 +96,13 @@ th{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mut
   </section>
 
   <section class="col">
+    <h2>Repeated sizes</h2>
+    <p>When sizes can repeat, a size set is just how many dolls share each size, smallest first, so there are 2<sup>N−1</sup> size sets and the count adds them all up. Equal dolls are identical, which makes direct counting overcount the symmetric arrangements. Burnside's lemma fixes that: average, over the ways of permuting equal pieces, the number of arrangements each permutation leaves unchanged. Each of those counts reduces to the same slot recurrence as the distinct-size case. A brute-force enumeration agrees for N ≤ 4, and a Pólya multiset count agrees for N ≤ 6.</p>
+  </section>
+
+  <section class="col">
     <h2>Code and data</h2>
-    <p>The <a href="https://github.com/guillochon/matryoshka-sequences">repository</a> has the brute-force enumerators, the fast counters and a table of the stacking count for N = 0 to 60. The same material is archived with other results in <a href="https://github.com/guillochon/oeis-results/tree/main/A124426">oeis-results</a>.</p>
+    <p>The <a href="https://github.com/guillochon/matryoshka-sequences">repository</a> has the brute-force enumerators, the fast counters, a table of the stacking count for N = 0 to 60 and the repeated-size counts. The same material is archived with other results in <a href="https://github.com/guillochon/oeis-results/tree/main/A124426">oeis-results</a>.</p>
   </section>
 </div>
 </body>
