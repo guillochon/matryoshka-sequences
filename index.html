@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Matryoshka Sequences</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Philosopher:wght@700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* Layout: one reading column for the rules and sequence, then a full-width wrapping gallery of drawn configurations, grouped by how many objects sit on the table. */
+:root{
+  --bg:#eef0ec; --surface:#f8f9f6; --fg:#22261f; --muted:#5d6458; --line:#cfd4ca;
+  --d1:#b8322a; --d2:#c98a12; --d3:#2f7a4d; --d4:#2b5aa0; --face:#f6e7d2;
+  --display:"Philosopher",Georgia,serif; --body:"Source Sans 3",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#171a16; --surface:#20241f; --fg:#e7eae3; --muted:#9ea597; --line:#353b33;
+  --d1:#e0574d; --d2:#e3a93a; --d3:#4fae75; --d4:#5f8fd8; --face:#f1dfc6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#171a16; --surface:#20241f; --fg:#e7eae3; --muted:#9ea597; --line:#353b33;
+  --d1:#e0574d; --d2:#e3a93a; --d3:#4fae75; --d4:#5f8fd8; --face:#f1dfc6; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 var(--body);padding:0 16px}
+.wrap{max-width:1100px;margin:0 auto;padding-block:40px 64px;display:flex;flex-direction:column;gap:28px}
+.col{max-width:68ch}
+h1{font:700 clamp(2rem,5vw,3rem)/1.1 var(--display);margin:0;text-wrap:balance}
+h2{font:700 1.4rem/1.2 var(--display);margin:0 0 8px}
+p{margin:0 0 10px}
+.lede{color:var(--muted);font-size:1.1rem}
+ul{margin:0;padding-left:1.2em}
+li{margin-bottom:4px}
+code,.mono{font-family:var(--mono);font-size:.88em}
+.seq{font-family:var(--mono);font-size:.95rem;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;overflow-x:auto;white-space:nowrap;font-variant-numeric:tabular-nums}
+.terms{display:flex;flex-wrap:wrap;gap:10px}
+.term{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 14px;display:flex;flex-direction:column;min-width:84px}
+.term b{font:700 1.5rem var(--display);font-variant-numeric:tabular-nums}
+.term span{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tabs button{font:600 1rem var(--body);background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:6px 16px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.tabs button:focus-visible{outline:2px solid var(--d4);outline-offset:2px}
+.tabs .count{color:var(--muted);margin-left:6px}
+.group h3{font:600 .8rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px 8px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.card svg{width:100%;height:86px}
+.card .lab{font:400 .7rem/1.3 var(--mono);color:var(--muted);text-align:center;overflow-wrap:anywhere}
+.card .num{font:600 .7rem var(--body);color:var(--muted);align-self:flex-start}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.9rem;color:var(--muted);align-items:center}
+.legend svg{height:34px;width:auto;vertical-align:middle}
+
+body{margin:0}
+a{color:var(--d4)}
+.crumbs{display:flex;gap:14px;flex-wrap:wrap;font-size:.9rem}
+.crumbs a{text-decoration:none}
+.crumbs a:hover,.crumbs a:focus-visible{text-decoration:underline}
+.crumbs [aria-current]{color:var(--fg);font-weight:600}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.cards a{display:flex;flex-direction:column;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 18px;color:var(--fg);text-decoration:none}
+.cards a:hover,.cards a:focus-visible{border-color:var(--d4)}
+.cards b{font:700 1.25rem var(--display)}
+.cards .mono{color:var(--muted)}
+table{border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{text-align:right;padding:6px 14px;border-bottom:1px solid var(--line)}
+th{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.tablewrap{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="crumbs" aria-label="Pages"><a href="./" aria-current=page>Home</a><a href="nesting.html">Nesting gallery</a><a href="stacking.html">Stacking gallery</a></nav>
+  <header class="col">
+    <h1>Matryoshka Sequences</h1>
+    <p class="lede">How many ways can you arrange N Russian nesting dolls when each one comes apart into a top and a bottom half? Two versions of the puzzle, with every arrangement drawn for up to four dolls.</p>
+  </header>
+
+  <section class="cards">
+    <a href="nesting.html"><b>Nesting</b><span>Pieces go inside larger pieces: bottoms in bottoms, tops in tops, dolls in dolls.</span><span class="mono">2, 10, 75, 780, 10556, …</span><span>Bell(N)·Bell(N+1), OEIS A124426</span></a>
+    <a href="stacking.html"><b>Stacking</b><span>The dolls also have flat heads, so a smaller piece can stand on a top half or a closed doll.</span><span class="mono">2, 19, 312, 7643, 256020, …</span><span>New sequence, submitted to the OEIS</span></a>
+  </section>
+
+  <section class="col">
+    <h2>The two counts</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Dolls</th><th>Nesting</th><th>Stacking</th></tr></thead>
+      <tbody><tr><td>1</td><td>2</td><td>2</td></tr><tr><td>2</td><td>10</td><td>19</td></tr><tr><td>3</td><td>75</td><td>312</td></tr><tr><td>4</td><td>780</td><td>7,643</td></tr><tr><td>5</td><td>10,556</td><td>256,020</td></tr><tr><td>6</td><td>178,031</td><td>11,096,168</td></tr><tr><td>7</td><td>3,630,780</td><td>598,896,401</td></tr><tr><td>8</td><td>87,548,580</td><td>39,139,847,188</td></tr></tbody>
+    </table></div>
+  </section>
+
+  <section class="col">
+    <h2>Where the formulas come from</h2>
+    <p>With nesting only, the closed dolls and bottom halves form stacks of nested pieces, and any grouping of the N dolls into stacks works: Bell(N) ways. The loose tops nest among themselves, and choosing which dolls are open and how their tops nest gives Bell(N+1) ways. Carlo Sanna noted in OEIS A000110 that Bell(N) counts nestings of whole dolls; splitting the dolls into halves multiplies in the second Bell number.</p>
+    <p>Stacking ties the tops to everything else: a tower can alternate dolls, bottoms and tops, except that a top can never sit inside an open bottom. Whether that rule applies depends on how the sizes of the tops and bottoms interleave, so the count no longer splits into a product. The terms come from a recurrence that places pieces from largest to smallest and tracks four kinds of free slot. A brute-force enumeration of every arrangement agrees for N ≤ 5. With every doll closed, the stacking count is OEIS A000258, the sum of Stirling2(N,k)·Bell(k).</p>
+  </section>
+
+  <section class="col">
+    <h2>Code and data</h2>
+    <p>The <a href="https://github.com/guillochon/matryoshka-sequences">repository</a> has the brute-force enumerators, the fast counters and a table of the stacking count for N = 0 to 60. The same material is archived with other results in <a href="https://github.com/guillochon/oeis-results/tree/main/A124426">oeis-results</a>.</p>
+  </section>
+</div>
+</body>
+</html>
