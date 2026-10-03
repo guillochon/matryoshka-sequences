@@ -69,8 +69,14 @@ distinct-size case, run on the cycles of g, and one DP over sizes sums everythin
 | Count | Brute-force enumeration | Fast recurrence |
 |---|---|---|
 | Nesting | `nesting_brute.py`, N ≤ 6 | `nesting_fast.py`, asserts Bell(N)·Bell(N+1) for N ≤ 20 |
-| Stacking | `stack_brute.py`, N ≤ 5 | `stack_fast.py` and the compact `prog.py`, N ≤ 60 |
-| Repeated sizes (both) | `repeat_sizes.py`: canonical brute force N ≤ 4, Pólya multiset count N ≤ 6 | `repeat_fast.py` (Burnside) |
+| Stacking | `stack_brute.py`, N ≤ 5 | `stack_fast.py` and `prog.py` (N ≤ 60); Rust `stack` (N ≤ 180) |
+| Repeated sizes (both) | `repeat_sizes.py`: canonical brute force N ≤ 4, Pólya multiset count N ≤ 6 | `repeat_fast.py` (Burnside; nesting N ≤ 14, stacking N ≤ 12); Rust `repeat` (nesting N ≤ 18, stacking N ≤ 13) |
+
+The Rust programs (`rust/`) work modulo primes and `crt.py` reassembles the values; `make_bfiles.py` checks
+every overlapping term against the Python results before writing the b-files. Each sequence stops where memory
+or time ran out: the stacking count needs about 1.8 GB at N = 180 (the last term took about a minute over all
+67 primes); the repeated-size counts grow about 2.5x (nesting) and 3x (stacking) in time and memory per term, and
+their last terms took 5.5 minutes and 2.6 minutes (the next stacking term would need about 12 GB).
 
 The JavaScript in the gallery pages runs its own enumeration in the browser and reproduces 2, 10, 75, 780;
 2, 19, 312, 7643; 2, 13, 117, 1485; and 2, 22, 415, 12160.
@@ -84,6 +90,7 @@ The JavaScript in the gallery pages runs its own enumeration in the browser and 
 | `code/refine.py` | stacking counts split by number of open dolls |
 | `code/pedestal.py` | checks a Dobinski-type identity a(N) = e⁻¹ Σ_m W_N(m)/m! (table replaced by m pedestals) |
 | `code/repeat_sizes.py`, `code/repeat_fast.py` | repeated sizes: brute force and Pólya checks, Burnside counter |
-| `data/stacking.txt` | stacking count, b-file |
+| `code/rust/`, `code/crt.py`, `code/make_bfiles.py` | compiled counters (modular), CRT reassembly, b-file assembly and checks |
+| `data/stacking.txt` | stacking count, b-file n = 0..180 |
 | `data/repeat_nesting.txt`, `data/repeat_stacking.txt` | repeated-size counts, b-files n = 0..18 and n = 0..13 |
 | `nesting.html`, `stacking.html`, `repeat_nesting.html`, `repeat_stacking.html` | the galleries |
