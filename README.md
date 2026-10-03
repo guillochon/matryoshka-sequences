@@ -84,6 +84,6 @@ The JavaScript in the gallery pages runs its own enumeration in the browser and 
 | `code/refine.py` | stacking counts split by number of open dolls |
 | `code/pedestal.py` | checks a Dobinski-type identity a(N) = e⁻¹ Σ_m W_N(m)/m! (table replaced by m pedestals) |
 | `code/repeat_sizes.py`, `code/repeat_fast.py` | repeated sizes: brute force and Pólya checks, Burnside counter |
-| `data/stacking_n0-60.txt` | stacking count, n = 0..60 (b-file format) |
-| `data/repeat_nesting.txt`, `data/repeat_stacking.txt` | repeated-size counts, one term per line from N = 1 |
+| `data/stacking.txt` | stacking count, b-file |
+| `data/repeat_nesting.txt`, `data/repeat_stacking.txt` | repeated-size counts, b-files n = 0..18 and n = 0..13 |
 | `nesting.html`, `stacking.html`, `repeat_nesting.html`, `repeat_stacking.html` | the galleries |

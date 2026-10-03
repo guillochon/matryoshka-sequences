@@ -37,6 +37,8 @@ code,.mono{font-family:var(--mono);font-size:.88em}
 .tabs button{font:600 1rem var(--body);background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:6px 16px;cursor:pointer}
 .tabs button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .tabs button:focus-visible{outline:2px solid var(--d4);outline-offset:2px}
+#kfilter{margin-top:10px}
+#kfilter button{font-size:.88rem;padding:4px 12px}
 .tabs .count{color:var(--muted);margin-left:6px}
 .group h3{font:600 .8rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
@@ -83,8 +85,8 @@ a{color:var(--d4)}
   <section class="col">
     <h2>The sequence</h2>
     <div class="terms" id="terms"></div>
-    <p style="margin-top:12px">Further terms, N = 1…12:</p>
-    <div class="seq">2, 22, 415, 12160, 493998, 26174898, 1735381834, 139755623586, 13367574533502, 1492053442567399, 191592227514173127, 27972153968339834054</div>
+    <p style="margin-top:12px">Further terms, N = 1…13:</p>
+    <div class="seq">2, 22, 415, 12160, 493998, 26174898, 1735381834, 139755623586, 13367574533502, 1492053442567399, 191592227514173127, 27972153968339834054, 4597659910322013131297</div>
     <p style="margin-top:12px">Not in the OEIS as of 2026-10-03. The size set with all sizes distinct gives the stacking sequence 2, 19, 312, 7643, …; a single shared size gives N + 1 (just how many dolls are closed). The terms come from Burnside's lemma: average, over the ways of permuting equal pieces, the number of arrangements each permutation leaves unchanged. Those counts reduce to the slot-counting recurrence of the distinct-size case. A brute-force enumeration of every arrangement agrees for N ≤ 4, and a Pólya multiset count agrees for N ≤ 6.</p>
   </section>
 
@@ -94,6 +96,7 @@ a{color:var(--d4)}
 
   <section>
     <div class="tabs" id="tabs" role="group" aria-label="Number of dolls"></div>
+    <div class="tabs kfilter" id="kfilter" role="group" aria-label="Number of distinct sizes"></div>
     <div id="gallery"></div>
   </section>
 </div>
@@ -256,16 +259,40 @@ document.getElementById('legend').innerHTML =
 
 const tabs = document.getElementById('tabs'), gallery = document.getElementById('gallery');
 let renderToken = 0;
+let curN = 0, curK = 0; // curK = 0 shows every number of distinct sizes
 function profileLabel(comp) {
   const sizes = [];
   comp.forEach((m, j) => { for (let x = 0; x < m; x++) sizes.push(j + 1); });
   return 'Sizes ' + sizes.join(', ');
 }
-function show(n) {
+function buildKFilter(n) {
+  const box = document.getElementById('kfilter');
+  const per = new Map();
+  for (const comp of profiles(n)) per.set(comp.length, (per.get(comp.length) || 0) + configsFor(comp).length);
+  const total = [...per.values()].reduce((a, b) => a + b, 0);
+  const items = [[0, 'All size sets', total], ...[...per.keys()].sort((a, b) => a - b)
+    .map(k => [k, `${k} distinct size${k > 1 ? 's' : ''}`, per.get(k)])];
+  box.innerHTML = '';
+  for (const [k, label, cnt] of items) {
+    const b = document.createElement('button');
+    b.id = 'k-' + k; b.dataset.k = k;
+    b.innerHTML = `${label}<span class="count">${cnt.toLocaleString()}</span>`;
+    b.setAttribute('aria-pressed', String(k === curK));
+    b.onclick = () => show(curN, k);
+    box.appendChild(b);
+  }
+}
+function show(n, k = 0) {
+  if (k > n) k = 0;
+  const nChanged = n !== curN;
+  curN = n; curK = k;
   [...tabs.children].forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.n === n)));
+  if (nChanged) buildKFilter(n);
+  [...document.getElementById('kfilter').children].forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.k === k)));
   gallery.innerHTML = '';
   const jobs = []; let idx = 0;
   for (const comp of profiles(n)) {
+    if (k && comp.length !== k) continue;
     const list = configsFor(comp), box = document.createElement('div');
     box.className = 'group';
     box.innerHTML = `<h3>${profileLabel(comp)} · ${list.length.toLocaleString()}</h3><div class="grid"></div>`;
@@ -277,8 +304,8 @@ function show(n) {
   (function step(p) {
     if (token !== renderToken) return;
     const bins = new Map();
-    for (const [grid, k, c] of jobs.slice(p, p + 300))
-      bins.set(grid, (bins.get(grid) || '') + `<div class="card"><span class="num">#${k}</span>${svgFor(c)}<div class="lab">${c.map(key).join('  ')}</div></div>`);
+    for (const [grid, i, c] of jobs.slice(p, p + 300))
+      bins.set(grid, (bins.get(grid) || '') + `<div class="card"><span class="num">#${i}</span>${svgFor(c)}<div class="lab">${c.map(key).join('  ')}</div></div>`);
     for (const [grid, h] of bins) grid.insertAdjacentHTML('beforeend', h);
     if (p + 300 < jobs.length) setTimeout(() => step(p + 300), 0);
   })(0);
